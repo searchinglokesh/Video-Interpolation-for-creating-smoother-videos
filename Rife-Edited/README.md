@@ -1,167 +1,124 @@
-# RIFE - Real Time Video Interpolation
-## [arXiv](https://arxiv.org/abs/2011.06294) | [YouTube](https://www.youtube.com/watch?v=60DX2T3zyVo&feature=youtu.be) | [Colab](https://colab.research.google.com/github/hzwer/arXiv2020-RIFE/blob/main/Colab_demo.ipynb) | [Tutorial](https://www.youtube.com/watch?v=gf_on-dbwyU&feature=emb_title) | [Demo](https://www.youtube.com/watch?v=oFnyq-e_b3g)
+# Video Frame Interpolation
 
-## Table of Contents
-1. [Introduction](#introduction)
-1. [Collection](#software)
-1. [Usage](#cli-usage)
-1. [Evaluation](#evaluation)
-1. [Training and Reproduction](#training-and-reproduction)
-1. [Citation](#citation)
-1. [Reference](#reference)
-1. [Sponsor](#sponsor)
+## The Goal
 
-
+The ultimate goal for Video Frame Interpolation is to improve the frame rate and enhance the visual quality of a video. Video Frame Interpolation's objective is to create many frames in the midst of two neighboring frames of the original video, or it aims to synthesize nonexistent frames in-between the original frames. Traditionally used ones before the introduction of Neural Networks linearly combined the frames to approximate intermediate flows, leading to artifacts around motion boundaries.
+Example(Before & Interpolated): https://drive.google.com/drive/folders/1-OMJCP3TH7DWwTAE2Fdr_F8WGp99inrf?usp=sharing
+ 
+![Demo](./video/test1.gif)
+![Demo](./video/2.gif)
 ## Introduction
-This project is the implement of [RIFE: Real-Time Intermediate Flow Estimation for Video Frame Interpolation](https://arxiv.org/abs/2011.06294). If you are a developer, welcome to follow [Practical-RIFE](https://github.com/hzwer/Practical-RIFE), which aims to make RIFE more practical for users by adding various features and design new models.
 
-Currently, our model can run 30+FPS for 2X 720p interpolation on a 2080Ti GPU. It supports 2X,4X,8X... interpolation, and multi-frame interpolation between a pair of images. 
+Video Frame Interpolation (VFI) aims to synthesize intermediate frames between two consecutive video frames. It's commonly utilized to boost frame rate and visual quality. Furthermore, real-time VFI algorithms working on high-resolution movies have a wide range of applications, including boosting the frame rate of video games and live broadcasts, as well as offering visual enhancement.
+There are many practical applications as  video enhancement, Automated Animation, video compression , slow-motion generation , and view synthesis.
+Furthermore, real-time VFI algorithms operating on high-resolution videos have a wide range of applications, including boosting the frame rate of video games and live broadcasts, as well as offering video enhancement services to consumers with limited computer capabilities.
+VFI is challenging due to the complex, large non-linear motions and illumination changes in the real world. Recently, VFI algorithms have offered a framework to address these challenges and achieved impressive results
 
-16X interpolation results from two input images: 
+## Common approaches
+**Common approaches for these methods involve two steps:**
+1) warping the input frames according to approximated optical flows and 
+2) fusing and refining the warped frames using Convolutional Neural Networks (CNNs).
+Flow-based approaches must approximate the intermediate flows Ft->0, Ft->1 from the perspective of the frame given the input frames I(0), I(1) which are expected to synthesize it.
+Forward warping based methods and Backward warping based methods are the two types of flow-based VFI algorithms. Because forward warping lacks a consistent implementation and suffers from the conflict of mapping several source pixels to the same position, which results in overlapped pixels and holes, backward warping is more extensively utilized.
 
-![Demo](./demo/I0_slomo_clipped.gif)
-![Demo](./demo/I2_slomo_clipped.gif)
+**However, the following two difficulties make this difficult for conventional flow-based VFI models:**
+1)  Some extra components are required: To compensate for the inadequacies of intermediate flow estimates, the image depth model, flow refinement model, and flow reversal layer are introduced. As substructures, these technologies also necessitate pre-trained state-of-the-art optical flow models that are not specifically intended for VFI activities.
+2)  For the approximated intermediate flows, there is no management: Most earlier interpolation models, to our knowledge, have only been trained with the final reconstruction loss. There is no other explicit supervision for the flow estimating process, which degrades interpolation performance.
 
-## Software
-[Squirrel-RIFE(中文软件)](https://github.com/YiWeiHuang-stack/Squirrel-Video-Frame-Interpolation) | [Waifu2x-Extension-GUI](https://github.com/AaronFeng753/Waifu2x-Extension-GUI) | [Flowframes](https://nmkd.itch.io/flowframes) | [RIFE-ncnn-vulkan](https://github.com/nihui/rife-ncnn-vulkan) | [RIFE-App(Paid)](https://grisk.itch.io/rife-app) | [Autodesk Flame](https://vimeo.com/505942142) | [SVP](https://www.svp-team.com/wiki/RIFE_AI_interpolation) |
+## Method and Working
 
-## CLI Usage
+ Real-time Intermediate Flow Estimation (RIFE) Algorithm
+ There are two major components in RIFE: 
+ 
+(1) Efficient intermediate flow estimation with the IFNet. 
 
-### Installation
+(2) Fusion process of the warped frames using a FusionNet. We describe the details of these two components in this subsection. 
+We employ a coarse-to-fine strategy with gradually increasing resolutions, Specifically, we first compute a rough prediction of the flow on low resolutions, which is believed to capture large motions easier, then iteratively refine the flow fields with gradually increasing resolutions.
+We can apply RIFE recursively to interpolate multiple intermediate frames at different timesteps t ∈ (0, 1). Specifically, given two consecutive input frames I(0), I(1), we apply RIFE once to get intermediate frame     at t = 0.5. We feed I(0) and      to get       , and we can repeat this process recursively to interpolate multiple frames.
+![Demo](./video/image.png)
+## Installation
 
+```bash
+git clone https://github.com/midnightripper/Video-Interpolation-for-creating-smoother-videos.git
 ```
-git clone git@github.com:hzwer/arXiv2020-RIFE.git
-cd arXiv2020-RIFE
-pip3 install -r requirements.txt
+```bash
+cd Ride-Edited
+```
+Create a Virtual Env with Python version 3.6
+Since I use Anaconda for python
+```bash
+conda create -n RIFE python=3.6
+```
+Now install pytorch cudakit(I use the stable version 10.2 which seems to work well)
+
+For Anaconda
+```bash
+conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+```
+For Pip
+```bash
+pip3 install torch==1.9.1+cu102 torchvision==0.10.1+cu102 torchaudio===0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
-* Download the pretrained **HD** models from [here](https://drive.google.com/file/d/1APIzVeI-4ZZCEuIRE1m6WYfSCaOsi_7_/view?usp=sharing). (百度网盘链接:https://pan.baidu.com/share/init?surl=u6Q7-i4Hu4Vx9_5BJibPPA 密码:hfk3，把压缩包解开后放在 train_log/\*)
+Install all the other requirements
+```bash
+pip install -r requirements.txt
+```
 
-* Unzip and move the pretrained parameters to train_log/\*
-
-* This model is not reported by our paper, for our paper model please refer to [evaluation](https://github.com/hzwer/arXiv2020-RIFE#evaluation).
-
-### Run
+## Run
 
 **Video Frame Interpolation**
 
-You can use our [demo video](https://drive.google.com/file/d/1i3xlKb7ax7Y70khcTcuePi6E7crO_dFc/view?usp=sharing) or your own video. 
-```
-python3 inference_video.py --exp=1 --video=video.mp4 
-```
-(generate video_2X_xxfps.mp4)
-```
-python3 inference_video.py --exp=2 --video=video.mp4
+Run the code and write the times you want to interpolate--((for 4X interpolation))
+```bash
+python inference_video.py --exp=2 --video=walking.mp4
 ```
 (for 4X interpolation)
+```bash
+python inference_video.py --exp=1 --video=walking.mp4
 ```
-python3 inference_video.py --exp=1 --video=video.mp4 --scale=0.5
+If the video is very large try to downscale the video
+```bash
+python inference_video.py --exp=2 --video=walking.mp4 --scale=0.5
 ```
-(If your video has very high resolution such as 4K, we recommend set --scale=0.5 (default 1.0). If you generate disordered pattern on your videos, try set --scale=2.0. This parameter control the process resolution for optical flow model.)
-```
-python3 inference_video.py --exp=2 --img=input/
-```
-(to read video from pngs, like input/0.png ... input/612.png, ensure that the png names are numbers)
-```
-python3 inference_video.py --exp=2 --video=video.mp4 --fps=60
-```
-(add slomo effect, the audio will be removed)
-```
-python3 inference_video.py --video=video.mp4 --montage --png
-```
-(if you want to montage the origin video, skip static frames and save the png format output)
-
-The warning info, 'Warning: Your video has *** static frames, it may change the duration of the generated video.' means that your video has changed the frame rate by adding static frames, it is common if you have processed 25FPS video to 30FPS.
-
 **Image Interpolation**
 
+Interpolating between 2 images
 ```
 python3 inference_img.py --img img0.png img1.png --exp=4
 ```
-(2^4=16X interpolation results)
-After that, you can use pngs to generate mp4:
-```
-ffmpeg -r 10 -f image2 -i output/img%d.png -s 448x256 -c:v libx264 -pix_fmt yuv420p output/slomo.mp4 -q:v 0 -q:a 0
-```
-You can also use pngs to generate gif:
-```
-ffmpeg -r 10 -f image2 -i output/img%d.png -s 448x256 -vf "split[s0][s1];[s0]palettegen=stats_mode=single[p];[s1][p]paletteuse=new=1" output/slomo.gif
-```
 
-### Run in docker
-Place the pre-trained models in `train_log/\*.pkl` (as above)
+## Our Proposed Solution
 
-Building the container:
-```
-docker build -t rife -f docker/Dockerfile .
-```
+Although RIFE is fast but in terms of the quality it still lacks behind the DAIN(2019) algorith for interpolation which uses depth data of individual pixel for accurate interpolation,So we propose 2 solutions
 
-Running the container:
-```
-docker run --rm -it -v $PWD:/host rife:latest inference_video --exp=1 --video=untitled.mp4 --output=untitled_rife.mp4
-```
-```
-docker run --rm -it -v $PWD:/host rife:latest inference_img --img img0.png img1.png --exp=4
-```
+1) Stabilising the video before interpolating: Since the interpolation gets data from video and can't accurately discriminate between object and backgorund artifacts are usually created in the output video,this is ooften not due to the incapability of the algorith but due to sudden movements in the input which makes it harder for detection
+So it's better to stabilise the video before we run the algorithm to decrease the amount of the artifacts created.So we use another stabilization for this.
+![Demo](./video/image4.png)
 
-Using gpu acceleration (requires proper gpu drivers for docker):
-```
-docker run --rm -it --gpus all -v /dev/dri:/dev/dri -v $PWD:/host rife:latest inference_video --exp=1 --video=untitled.mp4 --output=untitled_rife.mp4
-```
+2) Replacing the IFNet part with more latest analytical methods: Gunner-Farneback and Lucas-Kanade. These are the newer FusionNet and ContextNet models which are fine-tuned on the basis of the proposed solution.
+![Demo](./video/image2.PNG)
 
-## Evaluation
-Download [RIFE model](https://drive.google.com/file/d/1h42aGYPNJn2q8j_GVkS_yDu__G_UZ2GX/view?usp=sharing) reported by our paper.
 
-**UCF101**: Download [UCF101 dataset](https://liuziwei7.github.io/projects/VoxelFlow) at ./UCF101/ucf101_interp_ours/
+## Why use RIFE ?
 
-**Vimeo90K**: Download [Vimeo90K dataset](http://toflow.csail.mit.edu/) at ./vimeo_interp_test
+Even though there are multiple video frame interpolation which in some cases turn out to produce much more smoother interpolations or much more smoother and cleaner video without much artifacts. RIFE is unparalleled in it's speed of production and could be further upgraded to actually use in games ,which in turn need very less computational hardware but still produce frame rate to the top GPU's in the industry also decrease the burden on the computating hardware.
 
-**MiddleBury**: Download [MiddleBury OTHER dataset](https://vision.middlebury.edu/flow/data/) at ./other-data and ./other-gt-interp
+## Datasets
 
-**HD**: Download [HD dataset](https://github.com/baowenbo/MEMC-Net) at ./HD_dataset. We also provide a [google drive download link](https://drive.google.com/file/d/1iHaLoR2g1-FLgr9MEv51NH_KQYMYz-FA/view?usp=sharing).
-```
-# RIFE
-python3 benchmark/UCF101.py
-# "PSNR: 35.282 SSIM: 0.9688"
-python3 benchmark/Vimeo90K.py
-# "PSNR: 35.615 SSIM: 0.9779"
-python3 benchmark/MiddleBury_Other.py
-# "IE: 1.956"
-python3 benchmark/HD.py
-# "PSNR: 32.14"
-python3 benchmark/HD_multi.py
-# "PSNR: 18.60(544*1280), 29.02(720p), 24.73(1080p)"
-```
+- Vimeo90K: http://data.csail.mit.edu/tofu/dataset/vimeo_triplet.zip - used for training other competitive interpolations too
+- Middlebury: https://vision.middlebury.edu/flow/floweval-ijcv2011.pdf
 
-## Training and Reproduction
-Download [Vimeo90K dataset](http://toflow.csail.mit.edu/).
+## Examples
+https://drive.google.com/drive/folders/1-OMJCP3TH7DWwTAE2Fdr_F8WGp99inrf?usp=sharing
 
-We use 16 CPUs, 4 GPUs and 20G memory for training: 
-```
-python3 -m torch.distributed.launch --nproc_per_node=4 train.py --world_size=4
-```
+## Hardware
 
-## Citation
+GPU Nvidia GeForce 1660 Ti
+CPU Intel i7-9750H
 
-```
-@article{huang2020rife,
-  title={RIFE: Real-Time Intermediate Flow Estimation for Video Frame Interpolation},
-  author={Huang, Zhewei and Zhang, Tianyuan and Heng, Wen and Shi, Boxin and Zhou, Shuchang},
-  journal={arXiv preprint arXiv:2011.06294},
-  year={2020}
-}
-```
+## Team Members
 
-## Reference
+[Kolla Raghavendra Lokesh] 2019270
 
-Optical Flow:
-[ARFlow](https://github.com/lliuz/ARFlow)  [pytorch-liteflownet](https://github.com/sniklaus/pytorch-liteflownet)  [RAFT](https://github.com/princeton-vl/RAFT)  [pytorch-PWCNet](https://github.com/sniklaus/pytorch-pwc)
-
-Video Interpolation: 
-[DVF](https://github.com/lxx1991/pytorch-voxel-flow)  [TOflow](https://github.com/Coldog2333/pytoflow)  [SepConv](https://github.com/sniklaus/sepconv-slomo)  [DAIN](https://github.com/baowenbo/DAIN)  [CAIN](https://github.com/myungsub/CAIN)  [MEMC-Net](https://github.com/baowenbo/MEMC-Net)   [SoftSplat](https://github.com/sniklaus/softmax-splatting)  [BMBC](https://github.com/JunHeum/BMBC)  [EDSC](https://github.com/Xianhang/EDSC-pytorch)  [EQVI](https://github.com/lyh-18/EQVI)
-
-## Sponsor
-
-感谢支持 Paypal Sponsor: https://www.paypal.com/paypalme/hzwer
-
-<img width="160" alt="image" src="https://cdn.luogu.com.cn/upload/image_hosting/5h3609p1.png"><img width="160" alt="image" src="https://cdn.luogu.com.cn/upload/image_hosting/yi3kcwnw.png">
+[P.Likhita Reddy] 2019109
