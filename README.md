@@ -6,7 +6,7 @@ The ultimate goal for Video Frame Interpolation is to improve the frame rate and
 Example(Before & Interpolated): https://drive.google.com/drive/folders/1-OMJCP3TH7DWwTAE2Fdr_F8WGp99inrf?usp=sharing
  
 ![Demo](./video/test1.gif)
-
+![Demo](./video/2.gif)
 ## Introduction
 
 Video Frame Interpolation (VFI) aims to synthesize intermediate frames between two consecutive video frames. It's commonly utilized to boost frame rate and visual quality. Furthermore, real-time VFI algorithms working on high-resolution movies have a wide range of applications, including boosting the frame rate of video games and live broadcasts, as well as offering visual enhancement.
