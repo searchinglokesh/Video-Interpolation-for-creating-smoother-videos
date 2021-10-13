@@ -94,7 +94,7 @@ Although RIFE is fast but in terms of the quality it still lacks behind the DAIN
 So it's better to stabilise the video before we run the algorithm to decrease the amount of the artifacts created.So we use another stabilization for this.
 
 2) Replacing the IFNet part with more latest analytical methods: Gunner-Farneback and Lucas-Kanade. These are the newer FusionNet and ContextNet models which are fine-tuned on the basis of the proposed solution.
-![Demo](./video/image2.png)
+![Demo](./video/image2.PNG)
 
 
 ## Why use RIFE ?
