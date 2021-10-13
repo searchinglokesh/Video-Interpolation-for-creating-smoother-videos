@@ -92,7 +92,7 @@ Although RIFE is fast but in terms of the quality it still lacks behind the DAIN
 
 1) Stabilising the video before interpolating: Since the interpolation gets data from video and can't accurately discriminate between object and backgorund artifacts are usually created in the output video,this is ooften not due to the incapability of the algorith but due to sudden movements in the input which makes it harder for detection
 So it's better to stabilise the video before we run the algorithm to decrease the amount of the artifacts created.So we use another stabilization for this.
-
+![Demo](./video/image3.png)
 2) Replacing the IFNet part with more latest analytical methods: Gunner-Farneback and Lucas-Kanade. These are the newer FusionNet and ContextNet models which are fine-tuned on the basis of the proposed solution.
 ![Demo](./video/image2.PNG)
 
