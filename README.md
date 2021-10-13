@@ -64,7 +64,7 @@ pip install -r requirements.txt
 ```
 Then Run the code and write the times you want to interpolate
 ```bash
-python inference_video.py --exp=2 --video=konosuba.mp4
+python inference_video.py --exp=2 --video=walking.mp4
 ```
 
 
