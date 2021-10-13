@@ -14,7 +14,7 @@ There are many practical applications as  video enhancement, Automated Animation
 Furthermore, real-time VFI algorithms operating on high-resolution videos have a wide range of applications, including boosting the frame rate of video games and live broadcasts, as well as offering video enhancement services to consumers with limited computer capabilities.
 VFI is challenging due to the complex, large non-linear motions and illumination changes in the real world. Recently, VFI algorithms have offered a framework to address these challenges and achieved impressive results
 
-### common approaches
+## Common approaches
 Common approaches for these methods involve two steps:
 1) warping the input frames according to approximated optical flows and 
 2) fusing and refining the warped frames using Convolutional Neural Networks (CNNs).
@@ -33,6 +33,40 @@ However, the following two difficulties make this difficult for conventional flo
 (2) Fusion process of the warped frames using a FusionNet. We describe the details of these two components in this subsection. 
 We employ a coarse-to-fine strategy with gradually increasing resolutions, Specifically, we first compute a rough prediction of the flow on low resolutions, which is believed to capture large motions easier, then iteratively refine the flow fields with gradually increasing resolutions.
 We can apply RIFE recursively to interpolate multiple intermediate frames at different timesteps t ∈ (0, 1). Specifically, given two consecutive input frames I(0), I(1), we apply RIFE once to get intermediate frame     at t = 0.5. We feed I(0) and      to get       , and we can repeat this process recursively to interpolate multiple frames.
+
+## Installation
+
+```bash
+git clone https://github.com/midnightripper/Video-Interpolation-for-creating-smoother-videos.git
+```
+```bash
+cd Ride-Edited
+```
+Create a Virtual Env with Python version 3.6
+Since I use Anaconda for python
+```bash
+conda create -n RIFE python=3.6
+```
+Now install pytorch cudakit(I use the stable version 10.2 which seems to work well)
+
+For Anaconda
+```bash
+conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+```
+For Pip
+```bash
+pip3 install torch==1.9.1+cu102 torchvision==0.10.1+cu102 torchaudio===0.9.1 -f https://download.pytorch.org/whl/torch_stable.html
+```
+
+Install all the other requirements
+```bash
+pip install -r requirements.txt
+```
+Then Run the code and write the times you want to interpolate
+```bash
+python inference_video.py --exp=2 --video=konosuba.mp4
+```
+
 
 ## Our Proposed Solution
 
@@ -85,3 +119,9 @@ https://drive.google.com/drive/folders/1-OMJCP3TH7DWwTAE2Fdr_F8WGp99inrf?usp=sha
 
 GPU Nvidia GeForce 1660 Ti
 CPU Intel i7-9750H
+
+## Team Members
+
+[Kolla Raghavendra Lokesh] 2019270
+
+[P.Likhita Reddy] 2019109
