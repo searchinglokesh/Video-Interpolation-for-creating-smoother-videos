@@ -29,7 +29,9 @@ Forward warping based methods and Backward warping based methods are the two typ
 
  Real-time Intermediate Flow Estimation (RIFE) Algorithm
  There are two major components in RIFE: 
+ 
 (1) Efficient intermediate flow estimation with the IFNet. 
+
 (2) Fusion process of the warped frames using a FusionNet. We describe the details of these two components in this subsection. 
 We employ a coarse-to-fine strategy with gradually increasing resolutions, Specifically, we first compute a rough prediction of the flow on low resolutions, which is believed to capture large motions easier, then iteratively refine the flow fields with gradually increasing resolutions.
 We can apply RIFE recursively to interpolate multiple intermediate frames at different timesteps t ∈ (0, 1). Specifically, given two consecutive input frames I(0), I(1), we apply RIFE once to get intermediate frame     at t = 0.5. We feed I(0) and      to get       , and we can repeat this process recursively to interpolate multiple frames.
