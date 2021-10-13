@@ -62,11 +62,29 @@ Install all the other requirements
 ```bash
 pip install -r requirements.txt
 ```
-Then Run the code and write the times you want to interpolate
+
+## Run
+
+**Video Frame Interpolation**
+
+Run the code and write the times you want to interpolate--((for 4X interpolation))
 ```bash
 python inference_video.py --exp=2 --video=walking.mp4
 ```
+(for 4X interpolation)
+```bash
+python inference_video.py --exp=1 --video=walking.mp4
+```
+If the video is very large try to downscale the video
+```bash
+python inference_video.py --exp=2 --video=walking.mp4 --scale=0.5
+```
+**Image Interpolation**
 
+Interpolating between 2 images
+```
+python3 inference_img.py --img img0.png img1.png --exp=4
+```
 
 ## Our Proposed Solution
 
@@ -77,31 +95,6 @@ So it's better to stabilise the video before we run the algorithm to decrease th
 
 2) Replacing the IFNet part with more latest analytical methods: Gunner-Farneback and Lucas-Kanade. These are the newer FusionNet and ContextNet models which are fine-tuned on the basis of the proposed solution.
 
-## Compared algorithms
-
-[1] RIFE - 2021
-
-https://arxiv.org/abs/2011.06294
-
-[2] Softmax splatiing - 2020
-
-https://arxiv.org/pdf/2003.05534v1.pdf
-
-[3] DAIN (Depth-Aware Video Frame Interpolation) - 2019
-
-https://arxiv.org/pdf/1904.00830.pdf
-
-[4] MEMC-Net (Motion Estimation and Motion Compensation Driven Neural Network for Video Interpolation and Enhancement) - 2019
-
-https://arxiv.org/pdf/1810.08768.pdf
-
-[5] Super SloMo (Deep Slow Motion Video Reconstruction with Hybrid Imaging System) - 2018
-
-https://arxiv.org/pdf/1712.00080.pdf
-
-[6] SepConv - 2017
-
-https://arxiv.org/pdf/1708.01692.pdf
 
 ## Why use RIFE ?
 
