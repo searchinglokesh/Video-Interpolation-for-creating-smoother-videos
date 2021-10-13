@@ -5,7 +5,7 @@
 The ultimate goal for Video Frame Interpolation is to improve the frame rate and enhance the visual quality of a video. Video Frame Interpolation's objective is to create many frames in the midst of two neighboring frames of the original video, or it aims to synthesize nonexistent frames in-between the original frames. Traditionally used ones before the introduction of Neural Networks linearly combined the frames to approximate intermediate flows, leading to artifacts around motion boundaries.
 Example(Before & Interpolated): https://drive.google.com/drive/folders/1-OMJCP3TH7DWwTAE2Fdr_F8WGp99inrf?usp=sharing
  
-
+![Demo](./video/test1.gif)
 
 ## Introduction
 
